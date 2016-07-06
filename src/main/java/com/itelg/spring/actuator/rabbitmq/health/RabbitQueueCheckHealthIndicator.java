@@ -1,4 +1,4 @@
-package com.itelg.spring.actuator.rabbitmq;
+package com.itelg.spring.actuator.rabbitmq.health;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -10,6 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Queue;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
+
+import com.itelg.spring.actuator.rabbitmq.QueueCheck;
+import com.itelg.spring.actuator.rabbitmq.RabbitQueueProperties;
+import com.itelg.spring.actuator.rabbitmq.RabbitQueuePropertiesManager;
+
 import org.springframework.boot.actuate.health.Status;
 
 public class RabbitQueueCheckHealthIndicator extends AbstractHealthIndicator
