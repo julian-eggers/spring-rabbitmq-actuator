@@ -19,70 +19,68 @@ import org.springframework.boot.actuate.health.Status;
 
 public class RabbitQueueCheckHealthIndicator extends AbstractHealthIndicator
 {
-	private static final Logger log = LoggerFactory.getLogger(RabbitQueueCheckHealthIndicator.class);
-	private List<QueueCheck> queueChecks = new ArrayList<QueueCheck>();
-	private RabbitQueuePropertiesManager propertiesManager = new RabbitQueuePropertiesManager();
+    private static final Logger log = LoggerFactory.getLogger(RabbitQueueCheckHealthIndicator.class);
+    private List<QueueCheck> queueChecks = new ArrayList<QueueCheck>();
+    private RabbitQueuePropertiesManager propertiesManager = new RabbitQueuePropertiesManager();
 
-	@Override
-	protected void doHealthCheck(Builder builder) throws Exception
-	{
-		builder.up();
-		
-		for (QueueCheck queueCheck : queueChecks)
-		{
-			try
-			{
-				RabbitQueueProperties queueProperties = propertiesManager.request(queueCheck.getQueue());
-				String queueName = queueCheck.getQueue().getName();
-				int currentMessageCount = queueProperties.getMessageCount();
-				int maxMessageCount = queueCheck.getMaxMessageCount();
-				int currentConsumerCount = queueProperties.getConsumerCount();
-				int minConsumerCount = queueCheck.getMinConsumerCount();
+    @Override
+    protected void doHealthCheck(Builder builder) throws Exception
+    {
+        builder.up();
 
-				Map<String, Object> details = new LinkedHashMap<String, Object>();
-				details.put("status", Status.UP.getCode());
-				details.put("currentMessageCount", Integer.valueOf(currentMessageCount));
-				details.put("maxMessageCount", Integer.valueOf(maxMessageCount));
-				details.put("currentConsumerCount", Integer.valueOf(currentConsumerCount));
-				details.put("minConsumerCount", Integer.valueOf(minConsumerCount));
-				builder.withDetail(queueName, details);
+        for (QueueCheck queueCheck : queueChecks)
+        {
+            try
+            {
+                RabbitQueueProperties queueProperties = propertiesManager.request(queueCheck.getQueue());
+                String queueName = queueCheck.getQueue().getName();
+                int currentMessageCount = queueProperties.getMessageCount();
+                int maxMessageCount = queueCheck.getMaxMessageCount();
+                int currentConsumerCount = queueProperties.getConsumerCount();
+                int minConsumerCount = queueCheck.getMinConsumerCount();
 
-				if (currentMessageCount > maxMessageCount)
-				{
-					builder.down();
-					details.put("status", Status.DOWN.getCode());
-					log.warn(queueName + ": Too many messages ready (Current: " + currentMessageCount + ", "
-					        + "Max-Messages: " + queueCheck.getMaxMessageCount() + ")");
-				}
+                Map<String, Object> details = new LinkedHashMap<String, Object>();
+                details.put("status", Status.UP.getCode());
+                details.put("currentMessageCount", Integer.valueOf(currentMessageCount));
+                details.put("maxMessageCount", Integer.valueOf(maxMessageCount));
+                details.put("currentConsumerCount", Integer.valueOf(currentConsumerCount));
+                details.put("minConsumerCount", Integer.valueOf(minConsumerCount));
+                builder.withDetail(queueName, details);
 
-				if (currentConsumerCount < minConsumerCount)
-				{
-					builder.down();
-					details.put("status", Status.DOWN.getCode());
-					log.warn(queueName + ": Not enough consumers active (Current: " + currentConsumerCount + ", "
-					        + "Min-Consumers: " + queueCheck.getMinConsumerCount() + ")");
-				}
-			}
-			catch (Exception e)
-			{
-				log.error(e.getMessage(), e);
-				builder.down();
-			}
-		}
-	}
+                if (currentMessageCount > maxMessageCount)
+                {
+                    builder.down();
+                    details.put("status", Status.DOWN.getCode());
+                    log.warn(queueName + ": Too many messages ready (Current: " + currentMessageCount + ", " + "Max-Messages: " + queueCheck.getMaxMessageCount() + ")");
+                }
 
-	public void addQueueCheck(Queue queue, int maxMessageCount)
-	{
-		queueChecks.add(new QueueCheck(queue, maxMessageCount, 1));
-	}
+                if (currentConsumerCount < minConsumerCount)
+                {
+                    builder.down();
+                    details.put("status", Status.DOWN.getCode());
+                    log.warn(queueName + ": Not enough consumers active (Current: " + currentConsumerCount + ", " + "Min-Consumers: " + queueCheck.getMinConsumerCount() + ")");
+                }
+            }
+            catch (Exception e)
+            {
+                log.error(e.getMessage(), e);
+                builder.down();
+            }
+        }
+    }
 
-	public void addQueueCheck(Queue queue, int maxMessageCount, int minConsumerCount)
-	{
-		queueChecks.add(new QueueCheck(queue, maxMessageCount, minConsumerCount));
-	}
-	
-	public List<QueueCheck> getQueueChecks()
-	{
-		return queueChecks;
-	}
+    public void addQueueCheck(Queue queue, int maxMessageCount)
+    {
+        queueChecks.add(new QueueCheck(queue, maxMessageCount, 1));
+    }
+
+    public void addQueueCheck(Queue queue, int maxMessageCount, int minConsumerCount)
+    {
+        queueChecks.add(new QueueCheck(queue, maxMessageCount, minConsumerCount));
+    }
+
+    public List<QueueCheck> getQueueChecks()
+    {
+        return queueChecks;
+    }
 }
