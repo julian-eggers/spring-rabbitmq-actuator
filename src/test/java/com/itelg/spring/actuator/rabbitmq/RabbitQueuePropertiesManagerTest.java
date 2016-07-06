@@ -17,28 +17,28 @@ import com.itelg.spring.actuator.rabbitmq.RabbitQueuePropertiesManager;
 @RunWith(PowerMockRunner.class)
 public class RabbitQueuePropertiesManagerTest
 {
-	private RabbitQueuePropertiesManager propertiesManager = new RabbitQueuePropertiesManager();
-	
-	@Mock
-	private RabbitAdmin rabbitAdmin;
+    private RabbitQueuePropertiesManager propertiesManager = new RabbitQueuePropertiesManager();
 
-	@Test
-	public void testRequest()
-	{
-		Queue queue = new Queue("test");
-		queue.setAdminsThatShouldDeclare(rabbitAdmin);
-		
-		Properties properties = new Properties();
-		properties.setProperty("QUEUE_CONSUMER_COUNT", "2");
-		properties.setProperty("QUEUE_MESSAGE_COUNT", "234");
-		rabbitAdmin.getQueueProperties("test");
-		PowerMock.expectLastCall().andReturn(properties);
-		
-		PowerMock.replayAll();
-		RabbitQueueProperties queueProperties = propertiesManager.request(queue);
-		PowerMock.verifyAll();
-		
-		Assert.assertEquals(2, queueProperties.getConsumerCount());
-		Assert.assertEquals(234, queueProperties.getMessageCount());
-	}
+    @Mock
+    private RabbitAdmin rabbitAdmin;
+
+    @Test
+    public void testRequest()
+    {
+        Queue queue = new Queue("test");
+        queue.setAdminsThatShouldDeclare(rabbitAdmin);
+
+        Properties properties = new Properties();
+        properties.setProperty("QUEUE_CONSUMER_COUNT", "2");
+        properties.setProperty("QUEUE_MESSAGE_COUNT", "234");
+        rabbitAdmin.getQueueProperties("test");
+        PowerMock.expectLastCall().andReturn(properties);
+
+        PowerMock.replayAll();
+        RabbitQueueProperties queueProperties = propertiesManager.request(queue);
+        PowerMock.verifyAll();
+
+        Assert.assertEquals(2, queueProperties.getConsumerCount());
+        Assert.assertEquals(234, queueProperties.getMessageCount());
+    }
 }

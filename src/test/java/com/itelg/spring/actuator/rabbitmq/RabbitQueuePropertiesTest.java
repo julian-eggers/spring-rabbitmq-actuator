@@ -7,9 +7,9 @@ import com.itelg.spring.actuator.rabbitmq.RabbitQueueProperties;
 
 public class RabbitQueuePropertiesTest
 {
-	@Test
-	public void testToString()
-	{
-		Assert.assertTrue(new RabbitQueueProperties().toString().startsWith("RabbitQueueProperties"));
-	}
+    @Test
+    public void testToString()
+    {
+        Assert.assertTrue(new RabbitQueueProperties().toString().startsWith("RabbitQueueProperties"));
+    }
 }

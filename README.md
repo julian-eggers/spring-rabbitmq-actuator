@@ -14,7 +14,7 @@ SpringBoot RabbitMQ Actuator
 	<dependency>
 		<groupId>com.itelg.spring</groupId>
 		<artifactId>spring-rabbitmq-actuator</artifactId>
-		<version>0.2.5-RELEASE</version>
+		<version>0.3.0-RELEASE</version>
 	</dependency>
 </dependencies>
 ```
