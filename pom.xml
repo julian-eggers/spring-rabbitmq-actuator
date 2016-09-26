@@ -3,7 +3,7 @@
   <groupId>com.itelg.spring</groupId>
   <artifactId>spring-rabbitmq-actuator</artifactId>
   <name>spring-rabbitmq-actuator</name>
-  <description>SpringBoot RabbitMQ actuator</description>
+  <description>SpringBoot RabbitMQ actuator (Queue Metrics &amp; Health-Checks)</description>
   <url>https://github.com/julian-eggers/spring-rabbitmq-actuator</url>
   <version>0.3.0-RELEASE</version>
 
