@@ -12,6 +12,12 @@ public class RabbitQueuePropertiesManager
     {
         RabbitAdmin rabbitAdmin = validateRabbitAdmin(queue);
         Properties queueProperties = rabbitAdmin.getQueueProperties(queue.getName());
+
+        if (queueProperties == null)
+        {
+            throw new RuntimeException("Failed to fetch queue-properties (Queue: " + queue.getName() + ")");
+        }
+
         RabbitQueueProperties properties = new RabbitQueueProperties();
         properties.setConsumerCount(Integer.parseInt(queueProperties.get("QUEUE_CONSUMER_COUNT").toString()));
         properties.setMessageCount(Integer.parseInt(queueProperties.get("QUEUE_MESSAGE_COUNT").toString()));
