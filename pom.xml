@@ -81,8 +81,8 @@
 
   <scm>
     <url>https://github.com/julian-eggers/xpath-helper</url>
-    <connection>scm:git:https://github.com/julian-eggers/xpath-helper.git</connection>
-    <developerConnection>scm:git:https://github.com/julian-eggers/xpath-helper.git</developerConnection>
+    <connection>scm:git:https://github.com/julian-eggers/spring-rabbitmq-actuator.git</connection>
+    <developerConnection>scm:git:https://github.com/julian-eggers/spring-rabbitmq-actuator.git</developerConnection>
   </scm>
 
   <developers>
