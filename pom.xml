@@ -80,7 +80,7 @@
   </dependencies>
 
   <scm>
-    <url>https://github.com/julian-eggers/xpath-helper</url>
+    <url>https://github.com/julian-eggers/spring-rabbitmq-actuator</url>
     <connection>scm:git:https://github.com/julian-eggers/spring-rabbitmq-actuator.git</connection>
     <developerConnection>scm:git:https://github.com/julian-eggers/spring-rabbitmq-actuator.git</developerConnection>
   </scm>
