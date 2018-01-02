@@ -13,7 +13,7 @@ SpringBoot RabbitMQ Actuator (Queue Metrics & Health-Checks)
 <dependency>
 	<groupId>com.itelg.spring</groupId>
 	<artifactId>spring-rabbitmq-actuator</artifactId>
-	<version>0.4.0-RELEASE</version>
+	<version>0.5.0-RELEASE</version>
 </dependency>
 ```
 
