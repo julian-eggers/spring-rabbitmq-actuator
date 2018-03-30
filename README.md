@@ -1,7 +1,7 @@
 spring-rabbitmq-actuator
 ========================
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.itelg.spring/spring-rabbitmq-actuator/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.itelg.spring/spring-rabbitmq-actuator)
+[![Maven Central](https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/com/itelg/spring/spring-rabbitmq-actuator/maven-metadata.xml.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.itelg.spring%22%20AND%20a%3A%22spring-rabbitmq-actuator%22)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/ab6ef73712914dabac91965fe49eb297)](https://www.codacy.com/app/eggers-julian/spring-rabbitmq-actuator)
 [![Coverage Status](https://coveralls.io/repos/julian-eggers/spring-rabbitmq-actuator/badge.svg?branch=master&service=github)](https://coveralls.io/github/julian-eggers/spring-rabbitmq-actuator?branch=master)
 [![Build Status](https://travis-ci.org/julian-eggers/spring-rabbitmq-actuator.svg?branch=master)](https://travis-ci.org/julian-eggers/spring-rabbitmq-actuator)
