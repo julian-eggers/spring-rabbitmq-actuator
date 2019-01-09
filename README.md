@@ -45,7 +45,7 @@ public HealthIndicator rabbitQueueCheckHealthIndicator()
 }
 ```
 
-#### Response ([health.json](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-health))
+#### Response ([/actuator/health](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-health))
 ```json
 {
 	"status" : "DOWN",
@@ -84,7 +84,7 @@ public class RabbitMetricsConfiguration
 }
 ```
 
-#### Response ([metrics.json](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html))
+#### Response ([/actuator/metrics](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html))
 ```json
 {
   "names" : 
@@ -92,10 +92,10 @@ public class RabbitMetricsConfiguration
     "jvm.memory.used",
     "process.cpu.usage",
     "...",  
-    "rabbit.queue.com_example_exampleQueue1.currentConsumerCount",
-    "rabbit.queue.com_examle_exampleQueue1.currentConsumerCount",
-    "rabbit.queue.com_examle_exampleQueue2.currentMessageCount",
-    "rabbit.queue.com_examle_exampleQueue2.currentConsumerCount",
+    "rabbitmq.queue.messages.current",
+    "rabbitmq.queue.consumers.current",
+    "rabbitmq.queue.messages.max",
+    "rabbitmq.queue.consumers.min",
     "..."    
   ]
 }
@@ -104,7 +104,7 @@ public class RabbitMetricsConfiguration
 Detailed:
 ```json
 {
-  "name": "rabbit.queue.com_examle_exampleQueue1.currentMessageCount",
+  "name": "rabbitmq.queue.messages.current",
   "description": null,
   "baseUnit": null,
   "measurements": [
@@ -113,6 +113,9 @@ Detailed:
       "value": 215
     }
   ],
-  "availableTags": []
+  "availableTags" : [ {
+    "tag" : "queue",
+    "values" : [ "dlq-example-simple-queue-dlq", "dlq-example-simple-queue" ]
+  } ]
 }
 ```
