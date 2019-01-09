@@ -3,11 +3,8 @@ package com.itelg.spring.actuator.rabbitmq.metric;
 import static com.itelg.spring.actuator.rabbitmq.util.QueueUtil.generateQueue;
 import static java.util.Collections.singletonList;
 
-import com.itelg.spring.actuator.rabbitmq.RabbitQueueProperties;
-import com.itelg.spring.actuator.rabbitmq.RabbitQueuePropertiesManager;
-import io.micrometer.core.instrument.MeterRegistry;
-
 import java.util.function.ToDoubleFunction;
+
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -15,22 +12,27 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
-import org.powermock.api.easymock.annotation.Mock;
+import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.springframework.amqp.core.Queue;
 
 import com.itelg.spring.actuator.rabbitmq.QueueCheck;
+import com.itelg.spring.actuator.rabbitmq.RabbitQueueProperties;
+import com.itelg.spring.actuator.rabbitmq.RabbitQueuePropertiesManager;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
 @RunWith(PowerMockRunner.class)
 public class RabbitQueueMetricsTest
 {
     private RabbitQueueMetrics rabbitQueueMetrics;
 
-    @Mock
+    @MockStrict
     private RabbitQueuePropertiesManager propertiesManager;
 
-    @Mock
+    @MockStrict
     private MeterRegistry meterRegistry;
 
     @Before
@@ -87,16 +89,14 @@ public class RabbitQueueMetricsTest
         Capture<ToDoubleFunction<Queue>> currentMessageCountFunctionCapture = EasyMock.newCapture();
         Capture<ToDoubleFunction<Queue>> currentConsumerCountFunctionCapture = EasyMock.newCapture();
 
-        EasyMock.expect(meterRegistry.gauge(
-                        EasyMock.eq("rabbit.queue.test_queue.currentMessageCount"),
-                        EasyMock.eq(queue),
-                        EasyMock.capture(currentMessageCountFunctionCapture)))
+        EasyMock.expect(meterRegistry
+                .gauge(EasyMock.eq("rabbitmq.queue.messages.current"), EasyMock.eq(Tags.of("queue", "test.queue")), EasyMock.eq(queue), EasyMock
+                        .capture(currentMessageCountFunctionCapture)))
                 .andReturn(queue);
 
-        EasyMock.expect(meterRegistry.gauge(
-                        EasyMock.eq("rabbit.queue.test_queue.currentConsumerCount"),
-                        EasyMock.eq(queue),
-                        EasyMock.capture(currentConsumerCountFunctionCapture)))
+        EasyMock.expect(meterRegistry
+                .gauge(EasyMock.eq("rabbitmq.queue.consumers.current"), EasyMock.eq(Tags.of("queue", "test.queue")), EasyMock.eq(queue), EasyMock
+                        .capture(currentConsumerCountFunctionCapture)))
                 .andReturn(queue);
 
         PowerMock.replayAll();
@@ -122,28 +122,24 @@ public class RabbitQueueMetricsTest
         Capture<ToDoubleFunction<QueueCheck>> minConsumerCountFunctionCapture = EasyMock.newCapture();
         Capture<ToDoubleFunction<QueueCheck>> maxMessageCountFunctionCapture = EasyMock.newCapture();
 
-        EasyMock.expect(meterRegistry.gauge(
-                        EasyMock.eq("rabbit.queue.test_queue.currentMessageCount"),
-                        EasyMock.eq(queue),
-                        EasyMock.capture(currentMessageCountFunctionCapture)))
+        EasyMock.expect(meterRegistry
+                .gauge(EasyMock.eq("rabbitmq.queue.messages.current"), EasyMock.eq(Tags.of("queue", "test.queue")), EasyMock.eq(queue), EasyMock
+                        .capture(currentMessageCountFunctionCapture)))
                 .andReturn(queue);
 
-        EasyMock.expect(meterRegistry.gauge(
-                        EasyMock.eq("rabbit.queue.test_queue.currentConsumerCount"),
-                        EasyMock.eq(queue),
-                        EasyMock.capture(currentConsumerCountFunctionCapture)))
+        EasyMock.expect(meterRegistry
+                .gauge(EasyMock.eq("rabbitmq.queue.consumers.current"), EasyMock.eq(Tags.of("queue", "test.queue")), EasyMock.eq(queue), EasyMock
+                        .capture(currentConsumerCountFunctionCapture)))
                 .andReturn(queue);
 
-        EasyMock.expect(meterRegistry.gauge(
-                        EasyMock.eq("rabbit.queue.test_queue.minConsumerCount"),
-                        EasyMock.eq(queueCheck),
-                        EasyMock.capture(minConsumerCountFunctionCapture)))
+        EasyMock.expect(meterRegistry
+                .gauge(EasyMock.eq("rabbitmq.queue.messages.max"), EasyMock.eq(Tags.of("queue", "test.queue")), EasyMock.eq(queueCheck), EasyMock
+                        .capture(maxMessageCountFunctionCapture)))
                 .andReturn(queueCheck);
 
-        EasyMock.expect(meterRegistry.gauge(
-                        EasyMock.eq("rabbit.queue.test_queue.maxMessageCount"),
-                        EasyMock.eq(queueCheck),
-                        EasyMock.capture(maxMessageCountFunctionCapture)))
+        EasyMock.expect(meterRegistry
+                .gauge(EasyMock.eq("rabbitmq.queue.consumers.min"), EasyMock.eq(Tags.of("queue", "test.queue")), EasyMock.eq(queueCheck), EasyMock
+                        .capture(minConsumerCountFunctionCapture)))
                 .andReturn(queueCheck);
 
         PowerMock.replayAll();
@@ -163,10 +159,8 @@ public class RabbitQueueMetricsTest
         Queue queue = generateQueue("test.queue");
         rabbitQueueMetrics.addQueue(queue, 10000, 5);
 
-        EasyMock.expect(meterRegistry.gauge(
-                        EasyMock.eq("rabbit.queue.test_queue.currentMessageCount"),
-                        EasyMock.eq(queue),
-                        EasyMock.anyObject()))
+        EasyMock.expect(meterRegistry
+                .gauge(EasyMock.eq("rabbitmq.queue.messages.current"), EasyMock.eq(Tags.of("queue", "test.queue")), EasyMock.eq(queue), EasyMock.anyObject()))
                 .andThrow(new RuntimeException());
 
         PowerMock.replayAll();
