@@ -46,4 +46,10 @@ public class QueueCheck
     {
         return minConsumerCount;
     }
+
+    @Override
+    public String toString()
+    {
+        return "QueueCheck [queue=" + queue.getName() + ", maxMessageCount=" + maxMessageCount + ", minConsumerCount=" + minConsumerCount + "]";
+    }
 }

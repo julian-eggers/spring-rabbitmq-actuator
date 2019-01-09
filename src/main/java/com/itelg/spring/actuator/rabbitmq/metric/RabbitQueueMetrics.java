@@ -1,7 +1,5 @@
 package com.itelg.spring.actuator.rabbitmq.metric;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.MeterBinder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +9,10 @@ import org.springframework.amqp.core.Queue;
 
 import com.itelg.spring.actuator.rabbitmq.QueueCheck;
 import com.itelg.spring.actuator.rabbitmq.RabbitQueuePropertiesManager;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.MeterBinder;
 
 public class RabbitQueueMetrics implements MeterBinder
 {
@@ -50,41 +52,27 @@ public class RabbitQueueMetrics implements MeterBinder
     {
         for (QueueCheck queueCheck : queueChecks)
         {
+            Queue queue = queueCheck.getQueue();
+            Tags tags = Tags.of("queue", queue.getName());
+
             try
             {
-                Queue queue = queueCheck.getQueue();
-                String queueName = queueCheck.getQueue().getName().replace(".", "_");
-                int maxMessageCount = queueCheck.getMaxMessageCount();
-                int minConsumerCount = queueCheck.getMinConsumerCount();
+                meterRegistry.gauge("rabbitmq.queue.messages.current", tags, queue, q -> propertiesManager.request(q).getMessageCount());
+                meterRegistry.gauge("rabbitmq.queue.consumers.current", tags, queue, q -> propertiesManager.request(q).getConsumerCount());
 
-                meterRegistry.gauge(
-                        "rabbit.queue." + queueName + ".currentMessageCount",
-                        queue,
-                        q -> propertiesManager.request(q).getMessageCount());
-
-                meterRegistry.gauge(
-                        "rabbit.queue." + queueName + ".currentConsumerCount",
-                        queue,
-                        q -> propertiesManager.request(q).getConsumerCount());
-
-                if (maxMessageCount > 0)
+                if (queueCheck.getMaxMessageCount() > 0)
                 {
-                    meterRegistry.gauge(
-                            "rabbit.queue." + queueName + ".maxMessageCount",
-                            queueCheck,
-                            QueueCheck::getMaxMessageCount);
+                    meterRegistry.gauge("rabbitmq.queue.messages.max", tags, queueCheck, QueueCheck::getMaxMessageCount);
                 }
 
-                if (minConsumerCount > 0) {
-                    meterRegistry.gauge(
-                            "rabbit.queue." + queueName + ".minConsumerCount",
-                            queueCheck,
-                            QueueCheck::getMinConsumerCount);
+                if (queueCheck.getMinConsumerCount() > 0)
+                {
+                    meterRegistry.gauge("rabbitmq.queue.consumers.min", tags, queueCheck, QueueCheck::getMinConsumerCount);
                 }
             }
             catch (Exception e)
             {
-                log.error(e.getMessage(), e);
+                log.warn("Failed to fetch queue-information for {}", queue.getName(), e);
             }
         }
     }

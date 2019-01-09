@@ -5,7 +5,7 @@
   <name>spring-rabbitmq-actuator</name>
   <description>SpringBoot RabbitMQ actuator (Queue Metrics &amp; Health-Checks)</description>
   <url>https://github.com/julian-eggers/spring-rabbitmq-actuator</url>
-  <version>0.5.0-RELEASE</version>
+  <version>0.6.0-RC1</version>
 
   <properties>
     <!-- System -->
@@ -14,19 +14,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <!-- Testing -->
-    <jacoco.version>0.7.9</jacoco.version>
-    <powermock.version>1.7.3</powermock.version>
-    <easymock.version>3.5.1</easymock.version>
+    <jacoco.version>0.8.2</jacoco.version>
+    <powermock.version>2.0.0</powermock.version>
+    <easymock.version>4.0.1</easymock.version>
     <!-- Build -->
-    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
     <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-    <maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
     <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-    <maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
-    <maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
-    <coveralls.version>4.3.0</coveralls.version>
+    <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
+    <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
     <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-    <maven-scm-provider-gitexe.version>1.9.5</maven-scm-provider-gitexe.version>
+    <maven-scm-provider-gitexe.version>1.11.1</maven-scm-provider-gitexe.version>
+    <exists-maven-plugin.version>0.0.6</exists-maven-plugin.version>
     <github-release-plugin.version>1.2.0</github-release-plugin.version>
     <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
   </properties>
@@ -185,6 +186,17 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
+        <configuration>
+          <rules>
+            <dependencyConvergence />
+          </rules>
+          <fail>false</fail>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${jacoco.version}</version>
@@ -207,6 +219,21 @@
             <goals>
               <goal>report</goal>
             </goals>
+            <configuration>
+              <dataFile>target/jacoco-ut.exec</dataFile>
+              <outputDirectory>target/jacoco-ut</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>integration-test-report</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <dataFile>target/jacoco-it.exec</dataFile>
+              <outputDirectory>target/jacoco-it</outputDirectory>
+            </configuration>
           </execution>
           <execution>
             <id>agent</id>
@@ -214,12 +241,36 @@
               <goal>prepare-agent</goal>
             </goals>
           </execution>
+          <execution>
+            <id>merge-results</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>merge</goal>
+            </goals>
+            <configuration>
+              <fileSets>
+                <fileSet>
+                  <directory>target</directory>
+                  <includes>
+                    <include>*.exec</include>
+                  </includes>
+                </fileSet>
+              </fileSets>
+              <destFile>target/jacoco.exec</destFile>
+            </configuration>
+          </execution>
+          <execution>
+            <id>post-merge-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <dataFile>target/jacoco.exec</dataFile>
+              <outputDirectory>target/site/jacoco</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.eluder.coveralls</groupId>
-        <artifactId>coveralls-maven-plugin</artifactId>
-        <version>${coveralls.version}</version>
       </plugin>
       <!-- DEPLOYMENT -->
       <plugin>
@@ -238,6 +289,22 @@
             <version>${maven-scm-provider-gitexe.version}</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.honton.chas</groupId>
+        <artifactId>exists-maven-plugin</artifactId>
+        <version>${exists-maven-plugin.version}</version>
+        <configuration>
+          <property>skip-deploy-to-central</property>
+          <repository>http://central.maven.org/maven2/</repository>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>remote</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>de.jutzig</groupId>
@@ -267,6 +334,7 @@
           <serverId>ossrh</serverId>
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <skipRemoteStaging>${skip-deploy-to-central}</skipRemoteStaging>
         </configuration>
       </plugin>
     </plugins>

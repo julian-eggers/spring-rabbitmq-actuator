@@ -3,7 +3,7 @@ spring-rabbitmq-actuator
 
 [![Maven Central](https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/com/itelg/spring/spring-rabbitmq-actuator/maven-metadata.xml.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.itelg.spring%22%20AND%20a%3A%22spring-rabbitmq-actuator%22)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/ab6ef73712914dabac91965fe49eb297)](https://www.codacy.com/app/eggers-julian/spring-rabbitmq-actuator)
-[![Coverage Status](https://coveralls.io/repos/julian-eggers/spring-rabbitmq-actuator/badge.svg?branch=master&service=github)](https://coveralls.io/github/julian-eggers/spring-rabbitmq-actuator?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/ab6ef73712914dabac91965fe49eb297)](https://www.codacy.com/app/eggers-julian/spring-rabbitmq-actuator)
 [![Build Status](https://travis-ci.org/julian-eggers/spring-rabbitmq-actuator.svg?branch=master)](https://travis-ci.org/julian-eggers/spring-rabbitmq-actuator)
 
 SpringBoot RabbitMQ Actuator (Queue Metrics & Health-Checks)
@@ -11,9 +11,9 @@ SpringBoot RabbitMQ Actuator (Queue Metrics & Health-Checks)
 #### Maven
 ```xml
 <dependency>
-	<groupId>com.itelg.spring</groupId>
-	<artifactId>spring-rabbitmq-actuator</artifactId>
-	<version>0.5.0-RELEASE</version>
+  <groupId>com.itelg.spring</groupId>
+  <artifactId>spring-rabbitmq-actuator</artifactId>
+  <version>0.6.0-RC1</version>
 </dependency>
 ```
 
@@ -24,9 +24,9 @@ The specific RabbitAdmin is required to fetch the queue-information.
 @Bean
 public Queue exampleQueue()
 {
-	Queue queue = new Queue("com.itelg.spring.rabbitmq.test");
-	queue.setAdminsThatShouldDeclare(rabbitAdmin());
-	return queue;
+  Queue queue = new Queue("com.itelg.spring.rabbitmq.test");
+  queue.setAdminsThatShouldDeclare(rabbitAdmin());
+  return queue;
 }
 ```
 
@@ -38,10 +38,10 @@ public Queue exampleQueue()
 @Bean
 public HealthIndicator rabbitQueueCheckHealthIndicator()
 {
-	RabbitQueueCheckHealthIndicator healthIndicator = new RabbitQueueCheckHealthIndicator();
-	healthIndicator.addQueueCheck(exampleQueue1, 10000, 1);
-	healthIndicator.addQueueCheck(exampleQueue2, 50000, 3);
-	return healthIndicator;
+  RabbitQueueCheckHealthIndicator healthIndicator = new RabbitQueueCheckHealthIndicator();
+  healthIndicator.addQueueCheck(exampleQueue1, 10000, 1);
+  healthIndicator.addQueueCheck(exampleQueue2, 50000, 3);
+  return healthIndicator;
 }
 ```
 
