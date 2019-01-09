@@ -1,20 +1,18 @@
 package com.itelg.spring.actuator.rabbitmq.metric;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.MeterBinder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Queue;
-import org.springframework.boot.actuate.endpoint.PublicMetrics;
-import org.springframework.boot.actuate.metrics.Metric;
 
 import com.itelg.spring.actuator.rabbitmq.QueueCheck;
-import com.itelg.spring.actuator.rabbitmq.RabbitQueueProperties;
 import com.itelg.spring.actuator.rabbitmq.RabbitQueuePropertiesManager;
 
-public class RabbitQueueMetrics implements PublicMetrics
+public class RabbitQueueMetrics implements MeterBinder
 {
     private static final Logger log = LoggerFactory.getLogger(RabbitQueueMetrics.class);
     private RabbitQueuePropertiesManager propertiesManager = new RabbitQueuePropertiesManager();
@@ -48,33 +46,40 @@ public class RabbitQueueMetrics implements PublicMetrics
     }
 
     @Override
-    public Collection<Metric<?>> metrics()
+    public void bindTo(MeterRegistry meterRegistry)
     {
-        List<Metric<?>> metrics = new ArrayList<>();
-
         for (QueueCheck queueCheck : queueChecks)
         {
             try
             {
-                RabbitQueueProperties queueProperties = propertiesManager.request(queueCheck.getQueue());
+                Queue queue = queueCheck.getQueue();
                 String queueName = queueCheck.getQueue().getName().replace(".", "_");
                 int maxMessageCount = queueCheck.getMaxMessageCount();
                 int minConsumerCount = queueCheck.getMinConsumerCount();
 
-                int currentMessageCount = queueProperties.getMessageCount();
-                metrics.add(new Metric<Number>("rabbit.queue." + queueName + ".currentMessageCount", currentMessageCount));
+                meterRegistry.gauge(
+                        "rabbit.queue." + queueName + ".currentMessageCount",
+                        queue,
+                        q -> propertiesManager.request(q).getMessageCount());
 
-                int currentConsumerCount = queueProperties.getConsumerCount();
-                metrics.add(new Metric<Number>("rabbit.queue." + queueName + ".currentConsumerCount", currentConsumerCount));
+                meterRegistry.gauge(
+                        "rabbit.queue." + queueName + ".currentConsumerCount",
+                        queue,
+                        q -> propertiesManager.request(q).getConsumerCount());
 
                 if (maxMessageCount > 0)
                 {
-                    metrics.add(new Metric<Number>("rabbit.queue." + queueName + ".maxMessageCount", maxMessageCount));
+                    meterRegistry.gauge(
+                            "rabbit.queue." + queueName + ".maxMessageCount",
+                            queueCheck,
+                            QueueCheck::getMaxMessageCount);
                 }
 
-                if (minConsumerCount > 0)
-                {
-                    metrics.add(new Metric<Number>("rabbit.queue." + queueName + ".minConsumerCount", minConsumerCount));
+                if (minConsumerCount > 0) {
+                    meterRegistry.gauge(
+                            "rabbit.queue." + queueName + ".minConsumerCount",
+                            queueCheck,
+                            QueueCheck::getMinConsumerCount);
                 }
             }
             catch (Exception e)
@@ -82,8 +87,6 @@ public class RabbitQueueMetrics implements PublicMetrics
                 log.error(e.getMessage(), e);
             }
         }
-
-        return metrics;
     }
 
     public List<QueueCheck> getQueueChecks()
