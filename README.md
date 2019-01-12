@@ -17,7 +17,7 @@ SpringBoot RabbitMQ Actuator (Queue Metrics & Health-Checks)
 </dependency>
 ```
 
-#### Precondition ([Example](https://github.com/julian-eggers/spring-rabbitmq-dlx-example/blob/master/src/main/java/com/itelg/spring/rabbitmq/example/configuration/RabbitConfiguration.java#L98))
+#### Precondition ([Example](https://github.com/julian-eggers/spring-rabbitmq-dead-letter-queue-example/blob/master/src/main/java/com/itelg/spring/rabbitmq/example/configuration/RabbitConfiguration.java#L76))
 You have to add the declaring RabbitAdmin to each queue.
 The specific RabbitAdmin is required to fetch the queue-information.
 ```java
@@ -118,4 +118,16 @@ Detailed:
     "values" : [ "dlq-example-simple-queue-dlq", "dlq-example-simple-queue" ]
   } ]
 }
+```
+
+Prometheus-Example:
+```
+# HELP rabbitmq_queue_messages_current  
+# TYPE rabbitmq_queue_messages_current gauge
+rabbitmq_queue_messages_current{queue="dlq-example-simple-queue",} 0.0
+rabbitmq_queue_messages_current{queue="dlq-example-simple-queue-dlq",} 371.0
+# HELP rabbitmq_queue_consumers_current  
+# TYPE rabbitmq_queue_consumers_current gauge
+rabbitmq_queue_consumers_current{queue="dlq-example-simple-queue",} 1.0
+rabbitmq_queue_consumers_current{queue="dlq-example-simple-queue-dlq",} 0.0
 ```
